@@ -269,7 +269,7 @@ int fsg_lun_open(struct fsg_lun *curlun, const char *filename)
 	curlun->filp = filp;
 	curlun->file_length = size;
 	curlun->num_sectors = num_sectors;
-	printk(“lun_open: %zdn”, curlun->num_sectors - 1); // TODO:
+	printk("lun_open: %lld\n", curlun->num_sectors - 1); // TODO:
 	LDBG(curlun, "open backing file: %s\n", filename);
 	return 0;
 
@@ -307,7 +307,7 @@ void store_cdrom_address(u8 *dest, int msf, u32 addr)
 		dest[2] = addr % 60;	/* Seconds */
 		addr /= 60;
 		if (addr > 255)
-			printk(“store_cdrom_address: overflow \n”);	// TODO:	
+			printk("store_cdrom_address: overflow\n"); // TODO:
 		dest[1] = addr;		/* Minutes */
 		dest[0] = 0;		/* Reserved */
 	} else {

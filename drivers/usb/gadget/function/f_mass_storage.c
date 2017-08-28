@@ -1187,7 +1187,7 @@ static int do_read_capacity(struct fsg_common *common, struct fsg_buffhd *bh)
 		return -EINVAL;
 	}
 
-	printk(“readcap: %ldn”,curlun->num_sectors - 1); // TODO:
+	printk("readcap: %lld\n",curlun->num_sectors - 1); // TODO:
 	put_unaligned_be32(curlun->num_sectors - 1, &buf[0]);
 						/* Max logical block */
 	put_unaligned_be32(curlun->blksize, &buf[4]);/* Block length */
@@ -1218,13 +1218,15 @@ static int do_read_header(struct fsg_common *common, struct fsg_buffhd *bh)
 
 static int do_read_disc_information(struct fsg_common *common, struct fsg_buffhd *bh)
 {
+	u8 *outbuf = (u8 *) bh->buf;
 	struct fsg_lun *curlun = common->curlun;
+
 	if (common->cmnd[1] & ~0x02)
 	{ /* Mask away MSF */
 		curlun->sense_data = SS_INVALID_FIELD_IN_CDB;
 		return -EINVAL;
 	}
-	u8 *outbuf = (u8 *)bh->buf;
+
 	memset(outbuf, 0, 34);
 	outbuf[1] = 32;
 	outbuf[2] = 0xe;  /* last session complete, disc finalized */
@@ -1239,21 +1241,24 @@ static int do_read_disc_information(struct fsg_common *common, struct fsg_buffhd
 
 static int do_get_configuration(struct fsg_common *common, struct fsg_buffhd *bh)
 {
+	int cur;
+	u8 *buf = (u8 *) bh->buf;
 	struct fsg_lun *curlun = common->curlun;
+
 	if (common->cmnd[1] & ~0x02)
 	{ /* Mask away MSF */
 		curlun->sense_data = SS_INVALID_FIELD_IN_CDB;
 		return -EINVAL;
 	}
-	u8 *buf = (u8 *)bh->buf;
-	int cur;
+
 	if (curlun->num_sectors > CD_MAX_SECTORS)
 	{
-		printk(“Is dvdn”); // TODO
+		printk("Is dvd\n"); // TODO
 		cur = MMC_PROFILE_DVD_ROM;
 	}
 	else
 		cur = MMC_PROFILE_CD_ROM;
+
 	memset(buf, 0, 40);
 	put_unaligned_be32(36, &buf[0]);
 	put_unaligned_be16(cur, &buf[6]);
@@ -2134,7 +2139,7 @@ static int do_scsi_command(struct fsg_common *common)
 		common->data_size_from_cmnd = 0;
 		if (!common->curlun || !common->curlun->cdrom)
 			goto unknown_cmnd;
-		printk(“READ_DISC_INFORMATIONn”); // TODO:
+		printk("READ_DISC_INFORMATION\n"); // TODO:
 
 		reply = do_read_disc_information(common, bh);
 		break;
@@ -2143,7 +2148,7 @@ static int do_scsi_command(struct fsg_common *common)
 		common->data_size_from_cmnd = 0;
 		if (!common->curlun || !common->curlun->cdrom)
 			goto unknown_cmnd;
-		printk(“GET_CONFIGURATION\n”); // TODO:
+		printk("GET_CONFIGURATION\n"); // TODO:
 
 		reply = do_get_configuration(common, bh);
 		break;
