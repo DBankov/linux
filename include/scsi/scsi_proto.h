@@ -96,6 +96,7 @@
 #define WRITE_12              0xaa
 #define READ_MEDIA_SERIAL_NUMBER 0xab /* Obsolete with SPC-2 */
 #define SERVICE_ACTION_IN_12  0xab
+#define READ_DVD_STRUCTURE    0xad
 #define WRITE_VERIFY_12       0xae
 #define VERIFY_12	      0xaf
 #define SEARCH_HIGH_12        0xb0
