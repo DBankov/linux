@@ -1314,7 +1314,7 @@ static int do_read_dvd_structure(struct fsg_common *common, struct fsg_buffhd *b
 			}
 			outbuf[size] = i;
 			outbuf[size + 1] = 0x40; /* Not writable, readable */
-			put_unaligned_be16(&outbuf[size + 2], rds_caps_size[i]);
+			put_unaligned_be16(rds_caps_size[i], &outbuf[size + 2]);
 			size += 4;
 		}
 		break;
